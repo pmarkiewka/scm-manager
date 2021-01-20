@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-    
+
 package sonia.scm.api.v2.resources;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -101,15 +101,23 @@ public class DiffRootResource {
   public Response get(@PathParam("namespace") String namespace, @PathParam("name") String name, @PathParam("revision") String revision, @Pattern(regexp = DIFF_FORMAT_VALUES_REGEX) @DefaultValue("NATIVE") @QueryParam("format") String format) throws IOException {
     HttpUtil.checkForCRLFInjection(revision);
     DiffFormat diffFormat = DiffFormat.valueOf(format);
-    try (RepositoryService repositoryService = serviceFactory.create(new NamespaceAndName(namespace, name))) {
-      DiffCommandBuilder.OutputStreamConsumer outputStreamConsumer = repositoryService.getDiffCommand()
-        .setRevision(revision)
-        .setFormat(diffFormat)
-        .retrieveContent();
-      return Response.ok((StreamingOutput) outputStreamConsumer::accept)
-        .header(HEADER_CONTENT_DISPOSITION, HttpUtil.createContentDispositionAttachmentHeader(String.format("%s-%s.diff", name, revision)))
-        .build();
-    }
+    NamespaceAndName namespaceAndName = new NamespaceAndName(namespace, name);
+
+    return Response.ok(stream(namespaceAndName, revision, diffFormat))
+      .header(HEADER_CONTENT_DISPOSITION, HttpUtil.createContentDispositionAttachmentHeader(String.format("%s-%s.diff", name, revision)))
+      .build();
+  }
+
+  private StreamingOutput stream(NamespaceAndName namespaceAndName, String revision, DiffFormat diffFormat) {
+    return output -> {
+      try (RepositoryService repositoryService = serviceFactory.create(namespaceAndName)) {
+        DiffCommandBuilder.OutputStreamConsumer outputStreamConsumer = repositoryService.getDiffCommand()
+          .setRevision(revision)
+          .setFormat(diffFormat)
+          .retrieveContent();
+        outputStreamConsumer.accept(output);
+      }
+    };
   }
 
   @GET
