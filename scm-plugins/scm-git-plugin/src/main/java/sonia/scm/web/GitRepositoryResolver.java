@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-    
+
 package sonia.scm.web;
 
 //~--- non-JDK imports --------------------------------------------------------
@@ -30,16 +30,13 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryCache;
-import org.eclipse.jgit.lib.RepositoryCache.FileKey;
 import org.eclipse.jgit.transport.resolver.RepositoryResolver;
-import org.eclipse.jgit.transport.resolver.ServiceNotAuthorizedException;
 import org.eclipse.jgit.transport.resolver.ServiceNotEnabledException;
-import org.eclipse.jgit.util.FS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sonia.scm.repository.GitConfig;
 import sonia.scm.repository.GitRepositoryHandler;
+import sonia.scm.repository.GitUtil;
 import sonia.scm.repository.RepositoryProvider;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,7 +76,6 @@ public class GitRepositoryResolver implements RepositoryResolver<HttpServletRequ
    * @return
    *
    * @throws RepositoryNotFoundException
-   * @throws ServiceNotAuthorizedException
    * @throws ServiceNotEnabledException
    */
   @Override
@@ -103,7 +99,7 @@ public class GitRepositoryResolver implements RepositoryResolver<HttpServletRequ
 
         logger.debug("try to open git repository at {}", gitdir);
 
-        return RepositoryCache.open(FileKey.lenient(gitdir, FS.DETECTED), true);
+        return GitUtil.open(gitdir);
       }
       else
       {
