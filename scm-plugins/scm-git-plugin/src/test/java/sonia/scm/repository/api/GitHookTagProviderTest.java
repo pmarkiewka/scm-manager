@@ -32,6 +32,7 @@ import org.eclipse.jgit.revwalk.RevObject;
 import org.eclipse.jgit.revwalk.RevTag;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.ReceiveCommand;
+import org.eclipse.jgit.transport.ReceivePack;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -248,7 +249,9 @@ public class GitHookTagProviderTest {
     when(command.getOldId()).thenReturn(ObjectId.fromString(oldId));
     when(command.getType()).thenReturn(type);
     when(command.getRefName()).thenReturn(ref);
-    return new GitHookTagProvider(commands, repository) {
+    ReceivePack receivePack = mock(ReceivePack.class);
+    when(receivePack.getRepository()).thenReturn(repository);
+    return new GitHookTagProvider(receivePack, commands) {
       @Override
       RevWalk createRevWalk(Repository repository) {
         return revWalk;

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-    
+
 package sonia.scm.web;
 
 //~--- non-JDK imports --------------------------------------------------------
@@ -89,11 +89,12 @@ public abstract class SchemeBasedWebTokenGenerator implements WebTokenGenerator
 
       if (parts.length > 0)
       {
-        token = createToken(request, parts[0], parts[1]);
+        String schema = parts[0];
+        token = createToken(request, schema, parts[1]);
 
         if (token == null)
         {
-          logger.warn("could not create token from authentication header");
+          logger.debug("{} could not create token from scheme {}", getClass(), schema);
         }
       }
       else
