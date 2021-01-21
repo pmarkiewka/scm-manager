@@ -73,12 +73,10 @@ public class GitHookContextProvider extends HookContextProvider
   public GitHookContextProvider(
     GitChangesetConverterFactory converterFactory, ReceivePack receivePack,
                                 List<ReceiveCommand> receiveCommands,
-    Repository repository,
     String repositoryId
   ) {
     this.receivePack = receivePack;
     this.receiveCommands = receiveCommands;
-    this.repository = repository;
     this.repositoryId = repositoryId;
     this.changesetProvider = new GitHookChangesetProvider(converterFactory, receivePack,
       receiveCommands);
@@ -103,7 +101,7 @@ public class GitHookContextProvider extends HookContextProvider
 
   @Override
   public HookTagProvider getTagProvider() {
-    return new GitHookTagProvider(receiveCommands, repository);
+    return new GitHookTagProvider(receivePack, receiveCommands);
   }
 
   @Override
@@ -114,7 +112,7 @@ public class GitHookContextProvider extends HookContextProvider
 
   @Override
   public HookMergeDetectionProvider getMergeDetectionProvider() {
-    return new GitReceiveHookMergeDetectionProvider(repository, repositoryId, receiveCommands, converterFactory);
+    return new GitReceiveHookMergeDetectionProvider(receivePack, repositoryId, receiveCommands, converterFactory);
   }
 
   @Override
@@ -126,6 +124,5 @@ public class GitHookContextProvider extends HookContextProvider
   private final GitHookChangesetProvider changesetProvider;
   private final List<ReceiveCommand> receiveCommands;
   private final ReceivePack receivePack;
-  private final Repository repository;
   private final String repositoryId;
 }

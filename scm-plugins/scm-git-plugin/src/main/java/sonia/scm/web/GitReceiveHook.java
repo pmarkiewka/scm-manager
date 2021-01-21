@@ -115,22 +115,17 @@ public class GitReceiveHook implements PreReceiveHook, PostReceiveHook
    * @param type
    */
   private void handleReceiveCommands(ReceivePack rpack,
-    List<ReceiveCommand> receiveCommands, RepositoryHookType type)
-  {
-    try
-    {
-      Repository repository = rpack.getRepository();
+    List<ReceiveCommand> receiveCommands, RepositoryHookType type) {
+    try (Repository repository = rpack.getRepository()) {
+      repository.incrementOpen();
       String repositoryId = resolveRepositoryId(repository);
 
       logger.trace("resolved repository to {}", repositoryId);
 
-      GitHookContextProvider context = new GitHookContextProvider(converterFactory, rpack, receiveCommands, repository, repositoryId);
+      GitHookContextProvider context = new GitHookContextProvider(converterFactory, rpack, receiveCommands, repositoryId);
 
       hookEventFacade.handle(repositoryId).fireHookEvent(type, context);
-
-    }
-    catch (Exception ex)
-    {
+    } catch (Exception ex) {
       logger.error("could not handle receive commands", ex);
 
       GitHooks.abortIfPossible(type, rpack, receiveCommands, ex.getMessage());

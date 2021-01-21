@@ -92,14 +92,13 @@ public class GitHookChangesetCollector
   {
     Map<String, Changeset> changesets = Maps.newLinkedHashMap();
 
-    org.eclipse.jgit.lib.Repository repository = rpack.getRepository();
-
     RevWalk walk = null;
 
     GitChangesetConverter converter = null;
 
-    try
-    {
+    try (org.eclipse.jgit.lib.Repository repository = rpack.getRepository()) {
+      repository.incrementOpen();
+
       walk = rpack.getRevWalk();
       converter = converterFactory.create(repository, walk);
 

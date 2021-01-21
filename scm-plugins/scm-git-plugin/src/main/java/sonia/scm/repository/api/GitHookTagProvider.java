@@ -33,6 +33,7 @@ import org.eclipse.jgit.revwalk.RevObject;
 import org.eclipse.jgit.revwalk.RevTag;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.ReceiveCommand;
+import org.eclipse.jgit.transport.ReceivePack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sonia.scm.repository.GitUtil;
@@ -61,7 +62,7 @@ public class GitHookTagProvider implements HookTagProvider {
    *
    * @param commands received commands
    */
-  public GitHookTagProvider(List<ReceiveCommand> commands, Repository repository) {
+  public GitHookTagProvider(ReceivePack receivePack, List<ReceiveCommand> commands) {
     ImmutableList.Builder<Tag> createdTagBuilder = ImmutableList.builder();
     ImmutableList.Builder<Tag> deletedTagBuilder = ImmutableList.builder();
 
@@ -72,7 +73,8 @@ public class GitHookTagProvider implements HookTagProvider {
       if (Strings.isNullOrEmpty(tag)) {
         LOG.debug("received ref name {} is not a tag", refName);
       } else {
-        try (RevWalk revWalk = createRevWalk(repository)) {
+        try (Repository repository = receivePack.getRepository(); RevWalk revWalk = createRevWalk(repository)) {
+          repository.incrementOpen();
           if (isCreate(rc)) {
             createdTagBuilder.add(createTagFromNewId(revWalk, rc, tag));
           } else if (isDelete(rc)) {

@@ -28,6 +28,7 @@ import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.ReceiveCommand;
+import org.eclipse.jgit.transport.ReceivePack;
 import sonia.scm.repository.GitChangesetConverterFactory;
 import sonia.scm.repository.GitUtil;
 import sonia.scm.repository.spi.GitLogComputer;
@@ -37,13 +38,14 @@ import sonia.scm.repository.spi.LogCommandRequest;
 import java.util.List;
 
 public class GitReceiveHookMergeDetectionProvider implements HookMergeDetectionProvider {
-  private final Repository repository;
+
+  private final ReceivePack receivePack;
   private final String repositoryId;
   private final List<ReceiveCommand> receiveCommands;
   private final GitChangesetConverterFactory converterFactory;
 
-  public GitReceiveHookMergeDetectionProvider(Repository repository, String repositoryId, List<ReceiveCommand> receiveCommands, GitChangesetConverterFactory converterFactory) {
-    this.repository = repository;
+  public GitReceiveHookMergeDetectionProvider(ReceivePack receivePack, String repositoryId, List<ReceiveCommand> receiveCommands, GitChangesetConverterFactory converterFactory) {
+    this.receivePack = receivePack;
     this.repositoryId = repositoryId;
     this.receiveCommands = receiveCommands;
     this.converterFactory = converterFactory;
@@ -56,7 +58,10 @@ public class GitReceiveHookMergeDetectionProvider implements HookMergeDetectionP
     request.setAncestorChangeset(findRelevantRevisionForBranchIfToBeUpdated(target));
     request.setPagingLimit(1);
 
-    return new GitLogComputer(repositoryId, repository, converterFactory).compute(request).getTotal() == 0;
+    try (Repository repository = receivePack.getRepository()) {
+      repository.incrementOpen();
+      return new GitLogComputer(repositoryId, repository, converterFactory).compute(request).getTotal() == 0;
+    }
   }
 
   private String findRelevantRevisionForBranchIfToBeUpdated(String branch) {
