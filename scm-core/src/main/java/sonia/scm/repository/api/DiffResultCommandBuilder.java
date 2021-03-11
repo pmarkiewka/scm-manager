@@ -70,6 +70,11 @@ public class DiffResultCommandBuilder extends AbstractDiffCommandBuilder<DiffRes
     return this;
   }
 
+  public DiffResultCommandBuilder setTruncateLargeFileDiffs(Integer truncateLargeFileDiffs) {
+    request.setTruncateLargeFileDiffs(truncateLargeFileDiffs);
+    return this;
+  }
+
   /**
    * Returns the content of the difference as parsed objects.
    *

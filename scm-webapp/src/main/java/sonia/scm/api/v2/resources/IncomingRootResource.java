@@ -245,7 +245,8 @@ public class IncomingRootResource {
                                      @PathParam("source") String source,
                                      @PathParam("target") String target,
                                      @QueryParam("limit") @Min(1) Integer limit,
-                                     @QueryParam("offset") @Min(0) Integer offset) throws IOException {
+                                     @QueryParam("offset") @Min(0) Integer offset,
+                                     @QueryParam("truncateLargeFileDiffs") @Min(1) Integer truncateLargeFileDiffs) throws IOException {
     HttpUtil.checkForCRLFInjection(source);
     HttpUtil.checkForCRLFInjection(target);
     try (RepositoryService repositoryService = serviceFactory.create(new NamespaceAndName(namespace, name))) {
@@ -254,6 +255,7 @@ public class IncomingRootResource {
         .setAncestorChangeset(target)
         .setLimit(limit)
         .setOffset(offset)
+        .setTruncateLargeFileDiffs(truncateLargeFileDiffs)
         .getDiffResult();
       return Response.ok(parsedDiffMapper.mapForIncoming(repositoryService.getRepository(), diffResult, source, target)).build();
     }

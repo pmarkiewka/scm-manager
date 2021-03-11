@@ -26,6 +26,7 @@ package sonia.scm.repository.spi;
 
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.lib.Repository;
 import sonia.scm.repository.GitUtil;
 import sonia.scm.repository.InternalRepositoryException;
 import sonia.scm.repository.api.DiffFile;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -51,7 +53,7 @@ public class GitDiffResultCommand extends AbstractGitCommand implements DiffResu
 
   public DiffResult getDiffResult(DiffCommandRequest diffCommandRequest) throws IOException {
     org.eclipse.jgit.lib.Repository repository = open();
-    return new GitDiffResult(repository, Differ.diff(repository, diffCommandRequest), 0, null);
+    return new GitDiffResult(repository, Differ.diff(repository, diffCommandRequest), 0, null, null);
   }
 
   @Override
@@ -59,7 +61,7 @@ public class GitDiffResultCommand extends AbstractGitCommand implements DiffResu
     org.eclipse.jgit.lib.Repository repository = open();
     int offset = request.getOffset() == null ? 0 : request.getOffset();
     Integer limit = request.getLimit() == null ? null : request.getLimit();
-    return new GitDiffResult(repository, Differ.diff(repository, request), offset, limit);
+    return new GitDiffResult(repository, Differ.diff(repository, request), offset, limit, request.getTruncateLargeFileDiffs());
   }
 
   private class GitDiffResult implements DiffResult {
@@ -70,13 +72,15 @@ public class GitDiffResultCommand extends AbstractGitCommand implements DiffResu
 
     private final int offset;
     private final Integer limit;
+    private final Integer truncateLargeFileDiffs;
 
-    private GitDiffResult(org.eclipse.jgit.lib.Repository repository, Differ.Diff diff, int offset, Integer limit) {
+    private GitDiffResult(Repository repository, Differ.Diff diff, int offset, Integer limit, Integer truncateLargeFileDiffs) {
       this.repository = repository;
       this.diff = diff;
       this.offset = offset;
       this.limit = limit;
       this.diffEntries = diff.getEntries();
+      this.truncateLargeFileDiffs = truncateLargeFileDiffs;
     }
 
     @Override
@@ -113,7 +117,7 @@ public class GitDiffResultCommand extends AbstractGitCommand implements DiffResu
         diffEntryStream = diffEntryStream.limit(limit);
       }
       return diffEntryStream
-        .map(diffEntry -> new GitDiffFile(repository, diffEntry))
+        .map(diffEntry -> new GitDiffFile(repository, diffEntry, truncateLargeFileDiffs))
         .map(gitDiffFile -> (DiffFile) gitDiffFile)
         .iterator();
     }
@@ -123,10 +127,12 @@ public class GitDiffResultCommand extends AbstractGitCommand implements DiffResu
 
     private final org.eclipse.jgit.lib.Repository repository;
     private final DiffEntry diffEntry;
+    private final Integer truncateLargeFileDiffs;
 
-    private GitDiffFile(org.eclipse.jgit.lib.Repository repository, DiffEntry diffEntry) {
+    private GitDiffFile(Repository repository, DiffEntry diffEntry, Integer truncateLargeFileDiffs) {
       this.repository = repository;
       this.diffEntry = diffEntry;
+      this.truncateLargeFileDiffs = truncateLargeFileDiffs;
     }
 
     @Override
@@ -171,7 +177,12 @@ public class GitDiffResultCommand extends AbstractGitCommand implements DiffResu
     public Iterator<Hunk> iterator() {
       String content = format(repository, diffEntry);
       GitHunkParser parser = new GitHunkParser();
-      return parser.parse(content).iterator();
+      List<Hunk> hunks = parser.parse(content);
+      if (truncateLargeFileDiffs != null) {
+        return new HunkLimiter(truncateLargeFileDiffs).limit(hunks);
+      } else {
+        return hunks.iterator();
+      }
     }
 
     private String format(org.eclipse.jgit.lib.Repository repository, DiffEntry entry) {
@@ -183,7 +194,29 @@ public class GitDiffResultCommand extends AbstractGitCommand implements DiffResu
         throw new InternalRepositoryException(GitDiffResultCommand.this.repository, "failed to format diff entry", ex);
       }
     }
-
   }
 
+  private class HunkLimiter implements Predicate<Hunk> {
+
+    private final int maxSize;
+    private int counter = 0;
+
+    public HunkLimiter(Integer truncateLargeFileDiffs) {
+      this.maxSize = truncateLargeFileDiffs;
+    }
+
+    private Iterator<Hunk> limit(List<Hunk> hunks) {
+      return hunks.stream()
+        .filter(this)
+        .iterator();
+    }
+
+    @Override
+    public boolean test(Hunk diffLines) {
+      int hunkSize = Math.max(diffLines.getNewLineCount(), diffLines.getOldLineCount());
+      boolean includeThis = counter < maxSize;
+      counter += hunkSize;
+      return includeThis;
+    }
+  }
 }

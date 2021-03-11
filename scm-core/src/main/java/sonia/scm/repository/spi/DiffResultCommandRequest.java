@@ -35,4 +35,6 @@ public class DiffResultCommandRequest extends DiffCommandRequest {
 
   private Integer offset;
   private Integer limit;
+
+  private Integer truncateLargeFileDiffs;
 }

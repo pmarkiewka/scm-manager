@@ -147,13 +147,15 @@ public class DiffRootResource {
                                  @PathParam("name") String name,
                                  @PathParam("revision") String revision,
                                  @QueryParam("limit") @Min(1) Integer limit,
-                                 @QueryParam("offset") @Min(0) Integer offset) throws IOException {
+                                 @QueryParam("offset") @Min(0) Integer offset,
+                                 @QueryParam("truncateLargeFileDiffs") @Min(1) Integer truncateLargeFileDiffs) throws IOException {
     HttpUtil.checkForCRLFInjection(revision);
     try (RepositoryService repositoryService = serviceFactory.create(new NamespaceAndName(namespace, name))) {
       DiffResult diffResult = repositoryService.getDiffResultCommand()
         .setRevision(revision)
         .setLimit(limit)
         .setOffset(offset)
+        .setTruncateLargeFileDiffs(truncateLargeFileDiffs)
         .getDiffResult();
       return parsedDiffMapper.mapForRevision(repositoryService.getRepository(), diffResult, revision);
     }
