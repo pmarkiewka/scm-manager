@@ -53460,7 +53460,9 @@ exports[`Storyshots MarkdownView Code without Lang 1`] = `
       </p>
       
 
-      <div>
+      <div
+        className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+      >
         <pre
           style={
             Object {
@@ -53570,6 +53572,15 @@ exports[`Storyshots MarkdownView Code without Lang 1`] = `
             </div>
           </code>
         </pre>
+        <button
+          className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+          onClick={[Function]}
+          title="syntaxHighlighting.copyButton"
+        >
+          <i
+            className="fa fa-clipboard"
+          />
+        </button>
       </div>
     </div>
   </div>
@@ -54622,7 +54633,9 @@ Deserunt officia esse aliquip consectetur duis ut labore laborum commodo aliquip
       </p>
       
 
-      <div>
+      <div
+        className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+      >
         <pre
           style={
             Object {
@@ -55760,6 +55773,15 @@ Deserunt officia esse aliquip consectetur duis ut labore laborum commodo aliquip
             </div>
           </code>
         </pre>
+        <button
+          className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+          onClick={[Function]}
+          title="syntaxHighlighting.copyButton"
+        >
+          <i
+            className="fa fa-clipboard"
+          />
+        </button>
       </div>
       
 
@@ -63311,7 +63333,9 @@ exports[`Storyshots MarkdownView Inline Xml 1`] = `
     
       
 
-      <div>
+      <div
+        className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+      >
         <pre
           style={
             Object {
@@ -63681,6 +63705,15 @@ exports[`Storyshots MarkdownView Inline Xml 1`] = `
             </div>
           </code>
         </pre>
+        <button
+          className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+          onClick={[Function]}
+          title="syntaxHighlighting.copyButton"
+        >
+          <i
+            className="fa fa-clipboard"
+          />
+        </button>
       </div>
       
   
@@ -64857,7 +64890,9 @@ Deserunt officia esse aliquip consectetur duis ut labore laborum commodo aliquip
       </p>
       
 
-      <div>
+      <div
+        className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+      >
         <pre
           style={
             Object {
@@ -65995,6 +66030,15 @@ Deserunt officia esse aliquip consectetur duis ut labore laborum commodo aliquip
             </div>
           </code>
         </pre>
+        <button
+          className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+          onClick={[Function]}
+          title="syntaxHighlighting.copyButton"
+        >
+          <i
+            className="fa fa-clipboard"
+          />
+        </button>
       </div>
       
 
@@ -66191,7 +66235,9 @@ exports[`Storyshots MarkdownView Xml Code Block 1`] = `
       </h1>
       
 
-      <div>
+      <div
+        className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+      >
         <pre
           style={
             Object {
@@ -67570,6 +67616,15 @@ exports[`Storyshots MarkdownView Xml Code Block 1`] = `
             </div>
           </code>
         </pre>
+        <button
+          className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+          onClick={[Function]}
+          title="syntaxHighlighting.copyButton"
+        >
+          <i
+            className="fa fa-clipboard"
+          />
+        </button>
       </div>
     </div>
   </div>
@@ -69510,7 +69565,9 @@ exports[`Storyshots SyntaxHighlighter Go 1`] = `
 <div
   className="SyntaxHighlighterstories__Spacing-sc-1dcldp5-0 jbrCso"
 >
-  <div>
+  <div
+    className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+  >
     <pre
       style={
         Object {
@@ -70854,6 +70911,15 @@ exports[`Storyshots SyntaxHighlighter Go 1`] = `
         </div>
       </code>
     </pre>
+    <button
+      className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+      onClick={[Function]}
+      title="syntaxHighlighting.copyButton"
+    >
+      <i
+        className="fa fa-clipboard"
+      />
+    </button>
   </div>
 </div>
 `;
@@ -70862,7 +70928,9 @@ exports[`Storyshots SyntaxHighlighter Java 1`] = `
 <div
   className="SyntaxHighlighterstories__Spacing-sc-1dcldp5-0 jbrCso"
 >
-  <div>
+  <div
+    className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+  >
     <pre
       style={
         Object {
@@ -70948,6 +71016,15 @@ public class Test {
 
       </code>
     </pre>
+    <button
+      className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+      onClick={[Function]}
+      title="syntaxHighlighting.copyButton"
+    >
+      <i
+        className="fa fa-clipboard"
+      />
+    </button>
   </div>
 </div>
 `;
@@ -70956,7 +71033,9 @@ exports[`Storyshots SyntaxHighlighter Javascript 1`] = `
 <div
   className="SyntaxHighlighterstories__Spacing-sc-1dcldp5-0 jbrCso"
 >
-  <div>
+  <div
+    className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+  >
     <pre
       style={
         Object {
@@ -71769,6 +71848,15 @@ exports[`Storyshots SyntaxHighlighter Javascript 1`] = `
         </div>
       </code>
     </pre>
+    <button
+      className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+      onClick={[Function]}
+      title="syntaxHighlighting.copyButton"
+    >
+      <i
+        className="fa fa-clipboard"
+      />
+    </button>
   </div>
 </div>
 `;
@@ -71777,7 +71865,9 @@ exports[`Storyshots SyntaxHighlighter Markdown 1`] = `
 <div
   className="SyntaxHighlighterstories__Spacing-sc-1dcldp5-0 jbrCso"
 >
-  <div>
+  <div
+    className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+  >
     <pre
       style={
         Object {
@@ -79907,6 +79997,15 @@ exports[`Storyshots SyntaxHighlighter Markdown 1`] = `
         </div>
       </code>
     </pre>
+    <button
+      className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+      onClick={[Function]}
+      title="syntaxHighlighting.copyButton"
+    >
+      <i
+        className="fa fa-clipboard"
+      />
+    </button>
   </div>
 </div>
 `;
@@ -79915,7 +80014,9 @@ exports[`Storyshots SyntaxHighlighter Python 1`] = `
 <div
   className="SyntaxHighlighterstories__Spacing-sc-1dcldp5-0 jbrCso"
 >
-  <div>
+  <div
+    className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+  >
     <pre
       style={
         Object {
@@ -81340,6 +81441,15 @@ exports[`Storyshots SyntaxHighlighter Python 1`] = `
         </div>
       </code>
     </pre>
+    <button
+      className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+      onClick={[Function]}
+      title="syntaxHighlighting.copyButton"
+    >
+      <i
+        className="fa fa-clipboard"
+      />
+    </button>
   </div>
 </div>
 `;
@@ -81348,7 +81458,9 @@ exports[`Storyshots SyntaxHighlighter Without line numbers 1`] = `
 <div
   className="SyntaxHighlighterstories__Spacing-sc-1dcldp5-0 jbrCso"
 >
-  <div>
+  <div
+    className="SyntaxHighlighter__Container-ks8t62-0 hobWOh"
+  >
     <pre
       style={
         Object {
@@ -83713,6 +83825,15 @@ exports[`Storyshots SyntaxHighlighter Without line numbers 1`] = `
         </div>
       </code>
     </pre>
+    <button
+      className="SyntaxHighlighter__TopRightButton-ks8t62-1 dvbQpO"
+      onClick={[Function]}
+      title="syntaxHighlighting.copyButton"
+    >
+      <i
+        className="fa fa-clipboard"
+      />
+    </button>
   </div>
 </div>
 `;
