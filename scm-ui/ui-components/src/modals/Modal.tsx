@@ -45,8 +45,8 @@ export const Modal: FC<Props> = ({
   footer,
   active,
   className,
-  headColor = "light",
-  headTextColor = "black"
+  headColor = "white",
+  headTextColor = "black",
 }) => {
   const portalRootElement = usePortalRootElement("modalsRoot");
 

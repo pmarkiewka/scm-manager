@@ -46,7 +46,7 @@ class RepositoryGroupEntry extends React.Component<Props> {
     );
     const namespaceHeader = (
       <>
-        <Link to={`/repos/${group.name}/`} className={"has-text-dark"}>
+        <Link to={`/repos/${group.name}/`}>
           {group.name}
         </Link>{" "}
         {settingsLink}

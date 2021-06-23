@@ -56,7 +56,7 @@ export const DangerZoneContainer = styled.div`
 
   > *:not(:last-child) {
     padding-bottom: 1.5rem;
-    border-bottom: solid 2px whitesmoke;
+    border-bottom: solid 2px;
   }
 `;
 

@@ -31,6 +31,12 @@ $green: #00c79b;
 $blue-light: #98d8f3;
 $family-monospace: "Courier New", Monaco, Menlo, "Ubuntu Mono", "source-code-pro", monospace;
 
+.App {
+  @media (prefers-color-scheme: dark) {
+    font-weight: bold;
+  }
+}
+
 .is-ellipsis-overflow {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -83,7 +89,7 @@ hr.header-with-actions {
       width: 100%;
     }
     .input-button {
-      border: 2px solid #e9f7fd;
+      border: 2px solid;
       padding: 1em 1em;
       margin-top: 0 !important;
       width: 100%;
@@ -128,83 +134,6 @@ $danger-75: scale-color($danger, $lightness: 25%);
 $danger-50: scale-color($danger, $lightness: 50%);
 $danger-25: scale-color($danger, $lightness: 75%);
 
-@media (prefers-color-scheme: dark) {
-  $primary: $green;
-  $info: $green;
-  $success: $green;
-  $warning: $green;
-  $danger: $green;
-
-  $light: $white-ter !default;
-  $dark: $grey-darker !default;
-
-  $dark-75: scale-color($dark, $lightness: 25%);
-  $dark-50: scale-color($dark, $lightness: 50%);
-  $dark-25: scale-color($dark, $lightness: 75%);
-  $info-75: scale-color($info, $lightness: 25%);
-  $info-50: scale-color($info, $lightness: 50%);
-  $info-25: scale-color($info, $lightness: 75%);
-  $link-75: scale-color($link, $lightness: 25%);
-  $link-50: scale-color($link, $lightness: 50%);
-  $link-25: scale-color($link, $lightness: 75%);
-  $primary-75: scale-color($primary, $lightness: 25%);
-  $primary-50: scale-color($primary, $lightness: 50%);
-  $primary-25: scale-color($primary, $lightness: 75%);
-  $success-75: scale-color($success, $lightness: 25%);
-  $success-50: scale-color($success, $lightness: 50%);
-  $success-25: scale-color($success, $lightness: 75%);
-  $warning-75: scale-color($warning, $lightness: 25%);
-  $warning-50: scale-color($warning, $lightness: 50%);
-  $warning-25: scale-color($warning, $lightness: 75%);
-  $danger-75: scale-color($danger, $lightness: 25%);
-  $danger-50: scale-color($danger, $lightness: 50%);
-  $danger-25: scale-color($danger, $lightness: 75%);
-}
-
-/*
-// not supported by ie
-// css vars for external reuse
-:root {
-  // asc sorted initial variables
-  --black: #{$black};
-  --white: #{$white};
-
-  // asc sorted derived-variables
-  --primary: #{$primary};
-  --primary-75: #{$primary-75};
-  --primary-50: #{$primary-50};
-  --primary-25: #{$primary-25};
-  --info: #{$info};
-  --info-75: #{$info-75};
-  --info-50: #{$info-50};
-  --info-25: #{$info-25};
-  --success: #{$success};
-  --success-75: #{$success-75};
-  --success-50: #{$success-50};
-  --success-25: #{$success-25};
-  --warning: #{$warning};
-  --warning-75: #{$warning-75};
-  --warning-50: #{$warning-50};
-  --warning-25: #{$warning-25};
-  --danger: #{$danger};
-  --danger-75: #{$danger-75};
-  --danger-50: #{$danger-50};
-  --danger-25: #{$danger-25};
-  --light: #{$light};
-  --dark: #{$dark};
-  --dark-75: #{$dark-75};
-  --dark-50: #{$dark-50};
-  --dark-25: #{$dark-25};
-  --background: #{$background};
-  --border: #{$border};
-  --text: #{$text};
-  --link: #{$link};
-  --link-75: #{$link-75};
-  --link-50: #{$link-50};
-  --link-25: #{$link-25};
-}
-*/
-
 // readability issues with original color
 .has-text-warning {
   color: #ffb600 !important;
@@ -216,6 +145,13 @@ $danger-25: scale-color($danger, $lightness: 75%);
 
 .has-text-blue-light {
   color: $blue-light !important;
+}
+
+.has-text-black {
+  color: $black;
+  @media (prefers-color-scheme: dark) {
+    color: $white;
+  }
 }
 
 // border and background colors
@@ -307,22 +243,24 @@ $danger-25: scale-color($danger, $lightness: 75%);
   background-color: $blue-light;
 }
 
+.has-background-white {
+  background-color: $white-ter !important;
+}
+
+.has-border-light {
+  border-color: $white-ter !important;
+}
+
+.has-border-bottom-light {
+  border-bottom-color: $white-ter !important;
+}
+
 // tags
 .tag:not(body) {
   border: 1px solid transparent;
-  background-color: $white;
-
-  &.is-delete {
-    background-color: $light;
-  }
 
   + .is-delete {
-    border-color: #aaa;
     border-width: 1px 1px 1px 0;
-  }
-
-  &.is-outlined {
-    background-color: $white;
   }
 
   &.is-black.is-outlined {
@@ -398,9 +336,9 @@ $danger-25: scale-color($danger, $lightness: 75%);
     }
   }
 
-  &.is-warning {
-    color: #88550D;
-  }
+  //&.is-warning {
+  //  color: #88550D;
+  //}
 
   &.is-primary:hover,
   &.is-primary.is-hovered {
@@ -470,7 +408,6 @@ $danger-25: scale-color($danger, $lightness: 75%);
 
   &.is-warning[disabled] {
     background-color: scale-color($warning, $lightness: 75%);
-    color: #e1d4c2;
   }
 
   &.is-danger:hover,
@@ -527,17 +464,6 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "~@fortawesome/fontawesome-free/scss/brands";
 
 @import "~react-diff-view/style/index";
-
-// NEW STYLES
-
-//typography
-.subtitle {
-  color: #666;
-}
-
-.has-border-white {
-  border-color: #fff !important;
-}
 
 ul.is-separated {
   > li:after {
@@ -667,12 +593,6 @@ ul.is-separated {
     }
 
     &:hover {
-      td {
-        &.is-darker {
-          background-color: #e1e1e1;
-        }
-      }
-
       a {
         color: $blue;
       }
@@ -681,20 +601,11 @@ ul.is-separated {
 
   td {
     padding: 1em 1.25em;
-    //background-color: #fafafa;
-    border-bottom: 1px solid whitesmoke;
+    border-bottom: 1px solid;
 
     &:first-child {
       border-left: 3px solid $grey;
     }
-
-    &.is-darker {
-      background-color: whitesmoke;
-    }
-  }
-
-  &.is-hoverable tbody tr:not(.is-selected):hover {
-    background-color: whitesmoke;
   }
 
   thead th {
@@ -705,7 +616,7 @@ ul.is-separated {
 
 // panels
 .panel {
-  border: 1px solid #dbdbdb;
+  border: 1px solid;
   border-radius: 0.25rem;
 
   .panel-heading {
@@ -724,8 +635,6 @@ ul.is-separated {
   }
 
   .panel-footer {
-    background-color: whitesmoke;
-    color: #363636;
     font-size: 1.25em;
     font-weight: 300;
     line-height: 1.25;
@@ -789,8 +698,6 @@ form .field:not(.is-grouped) {
 
 .pagination-previous[disabled],
 .pagination-next[disabled] {
-  background-color: #ededed;
-  color: #bcbcbc;
 }
 
 .pagination-link.is-current {
@@ -799,7 +706,7 @@ form .field:not(.is-grouped) {
 
 // hero
 .hero.is-dark {
-  background-color: #002e4b;
+  background-color: $blue;
   background-image: url(images/scmManagerHero.jpg);
   background-size: cover;
   background-position: top center;
@@ -808,8 +715,12 @@ form .field:not(.is-grouped) {
   .tabs.is-boxed li.is-active a:hover,
   .tabs.is-toggle li.is-active a,
   .tabs.is-toggle li.is-active a:hover {
-    background-color: #28b1e8;
-    border-color: #28b1e8;
+    @media (prefers-color-scheme: dark) {
+      background-color: #12739c;
+      border-color: #12739c;
+    }
+    background-color: $blue;
+    border-color: $blue;
     color: #fff;
   }
 }
@@ -821,14 +732,12 @@ form .field:not(.is-grouped) {
   position: absolute;
   right: 0;
   top: 0;
-  background-color: whitesmoke;
 }
 
 // menu
 .menu {
   div {
     height: 100%;
-    /*border: 1px solid #eee;*/
     margin-bottom: 1rem;
   }
 }
@@ -840,10 +749,13 @@ form .field:not(.is-grouped) {
   color: #fff;
   font-size: 1em;
   font-weight: 600;
-  background-color: #bbb;
   border-radius: 5px 5px 0 0;
   padding: 0.5rem 1rem;
   text-transform: none;
+
+  @media (prefers-color-scheme: dark) {
+    border: 1px solid $grey;
+  }
 
   &:last-child,
   &:not(:last-child) {
@@ -862,12 +774,18 @@ form .field:not(.is-grouped) {
 .menu-list {
   a {
     padding: 1rem;
+    border-radius: 0;
   }
 
   > li {
     ul {
       margin: 0;
-      border-top: 1px solid #eee;
+      border-top: 1px solid $white-ter;
+      border-left: none;
+
+      @media (prefers-color-scheme: dark) {
+        border-top: 1px solid $grey;
+      }
 
       li {
         border-right: none;
@@ -881,7 +799,6 @@ form .field:not(.is-grouped) {
     > a.is-active:before {
       position: relative;
       content: " ";
-      background: $blue;
       height: 53px;
       width: 2px;
       display: block;
@@ -890,10 +807,14 @@ form .field:not(.is-grouped) {
       top: -16px;
     }
 
-    border-radius: 0;
-    border-top: 1px solid #eee;
-    border-left: 1px solid #eee;
-    border-right: 1px solid #eee;
+    border-top: 1px solid $white-ter;
+    border-left: 1px solid $white-ter;
+    border-right: 1px solid $white-ter;
+    @media (prefers-color-scheme: dark) {
+      border-top: 1px solid $grey;
+      border-left: 1px solid $grey;
+      border-right: 1px solid $grey;
+    }
   }
 
   > li:first-child {
@@ -901,7 +822,10 @@ form .field:not(.is-grouped) {
   }
 
   li:last-child {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid $white-ter;
+    @media (prefers-color-scheme: dark) {
+      border-bottom: 1px solid $grey;
+    }
   }
 
   div {
@@ -937,6 +861,20 @@ form .field:not(.is-grouped) {
 // modal
 .modal-card {
   border-radius: 6px;
+
+  @media (prefers-color-scheme: dark) {
+    color: $white;
+  }
+
+  .modal-card-head {
+    background-color: $dark;
+  }
+
+  .modal-card-body {
+    @media (prefers-color-scheme: dark) {
+      background-color: $dark-75;
+    }
+  }
 
   .modal-card-foot {
     justify-content: flex-end; // pulled-right
