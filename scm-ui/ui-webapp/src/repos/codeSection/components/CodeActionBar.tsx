@@ -59,7 +59,7 @@ const CodeActionBar: FC<Props> = ({ selectedBranch, branches, onSelectBranch, sw
   const location = useLocation();
 
   return (
-    <ActionBar>
+    <ActionBar className="has-border-light">
       <FlexShrinkLevel
         left={
           branches &&

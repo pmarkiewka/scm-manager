@@ -27,10 +27,10 @@
 
 export default {
   'pre[class*="language-"]': {
-    color: "#363636",
+    color: "#fff",
     fontSize: "1rem",
     textShadow: "none",
-    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
+    fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
     direction: "ltr",
     textAlign: "left",
     whiteSpace: "pre",
@@ -45,15 +45,15 @@ export default {
     msHyphens: "none",
     hyphens: "none",
     padding: "1em",
-    margin: ".5em 0",
+    margin: "0.5em 0",
     overflow: "auto",
-    background: "#ffffff"
+    background: "#363636",
   },
   'code[class*="language-"]': {
-    color: "#363636",
+    color: "#fff",
     fontSize: "1rem",
     textShadow: "none",
-    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
+    fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
     direction: "ltr",
     textAlign: "left",
     whiteSpace: "pre",
@@ -66,140 +66,140 @@ export default {
     WebkitHyphens: "none",
     MozHyphens: "none",
     msHyphens: "none",
-    hyphens: "none"
+    hyphens: "none",
   },
   'pre[class*="language-"]::selection': {
     textShadow: "none",
-    background: "#7fe3cd"
+    background: "#7fe3cd",
   },
   'code[class*="language-"]::selection': {
     textShadow: "none",
-    background: "#7fe3cd"
+    background: "#7fe3cd",
   },
   'pre[class*="language-"]::-moz-selection': {
     textShadow: "none",
-    background: "#7fe3cd"
+    background: "#7fe3cd",
   },
   'code[class*="language-"]::-moz-selection': {
     textShadow: "none",
-    background: "#7fe3cd"
+    background: "#7fe3cd",
   },
   ':not(pre) > code[class*="language-"]': {
-    padding: ".1em .3em",
-    borderRadius: ".3em",
+    padding: "0.1em 0.3em",
+    borderRadius: "0.3em",
     color: "#ff3860",
-    background: "#fbe7eb"
+    background: "#fbe7eb",
   },
   ".namespace": {
-    Opacity: ".7"
+    Opacity: "0.7",
   },
   comment: {
-    color: "#9a9a9a"
+    color: "#ffffff",
   },
   prolog: {
-    color: "#9a9a9a"
+    color: "#ffffff",
   },
   doctype: {
-    color: "#9a9a9a"
+    color: "#ffffff",
   },
   cdata: {
-    color: "#9a9a9a"
+    color: "#ffffff",
   },
   punctuation: {
-    color: "#9a9a9a"
+    color: "#ffffff",
   },
   property: {
-    color: "#2c99c7"
+    color: "#ff8800",
   },
   tag: {
-    color: "#2c99c7"
+    color: "#ff8800",
   },
   boolean: {
-    color: "#2c99c7"
+    color: "#ff8800",
   },
   number: {
-    color: "#2c99c7"
+    color: "#ff8800",
   },
   constant: {
-    color: "#2c99c7"
+    color: "#ff8800",
   },
   symbol: {
-    color: "#2c99c7"
+    color: "#ff8800",
   },
   deleted: {
-    color: "#2c99c7"
+    color: "#ff8800",
   },
   selector: {
-    color: "#005f9a"
+    color: "#ff8800",
   },
   "attr-name": {
-    color: "#005f9a"
+    color: "#ff8800",
   },
   string: {
-    color: "#005f9a"
+    color: "#ff8800",
   },
   char: {
-    color: "#005f9a"
+    color: "#ff8800",
   },
   builtin: {
-    color: "#005f9a"
+    color: "#ff8800",
   },
   inserted: {
-    color: "#005f9a"
+    color: "#ff8800",
   },
   operator: {
-    color: "#686868"
+    color: "#ffffff",
   },
   entity: {
-    color: "#686868",
-    cursor: "help"
+    color: "#ffffff",
+    cursor: "help",
   },
   url: {
-    color: "#686868"
+    color: "#ffffff",
   },
   ".language-css .token.string": {
-    color: "#686868"
+    color: "#ffffff",
   },
   ".style .token.string": {
-    color: "#686868"
+    color: "#ffffff",
   },
   atrule: {
-    color: "#00a984"
+    color: "#90EE90",
   },
   "attr-value": {
-    color: "#00a984"
+    color: "#90EE90",
   },
   keyword: {
-    color: "#00a984"
+    color: "#90EE90",
   },
   function: {
-    color: "#ff3860"
+    color: "#ff3860",
   },
   regex: {
-    color: "#a74eb2"
+    color: "#FF69B4",
   },
   important: {
-    color: "#a74eb2",
-    fontWeight: "bold"
+    color: "#FF69B4",
+    fontWeight: "bold",
   },
   variable: {
-    color: "#a74eb2"
+    color: "#FF69B4",
   },
   bold: {
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   title: {
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   italic: {
-    fontStyle: "italic"
+    fontStyle: "italic",
   },
   "pre[data-line]": {
-    position: "relative"
+    position: "relative",
   },
   'pre[class*="language-"] > code[class*="language-"]': {
     position: "relative",
-    zIndex: "1"
+    zIndex: "1",
   },
   ".line-highlight": {
     position: "absolute",
@@ -207,11 +207,11 @@ export default {
     right: "0",
     padding: "inherit 0",
     marginTop: "1em",
-    background: "#f5f5f5",
+    background: "#363636",
     boxShadow: "inset 5px 0 0 #99d8f3",
     zIndex: "0",
     pointerEvents: "none",
     lineHeight: "inherit",
-    whiteSpace: "pre"
-  }
+    whiteSpace: "pre",
+  },
 };

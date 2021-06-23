@@ -51,11 +51,11 @@ class UserRow extends React.Component<Props> {
 
     return (
       <tr className={user.active ? "border-is-green" : "border-is-yellow"}>
-        <td className="has-border-light">
+        <td className="has-border-bottom-light">
           {iconType} {this.renderLink(to, user.name)}
         </td>
-        <td className="has-border-light is-hidden-mobile">{this.renderLink(to, user.displayName)}</td>
-        <td className="has-border-light">
+        <td className="has-border-bottom-light is-hidden-mobile">{this.renderLink(to, user.displayName)}</td>
+        <td className="has-border-bottom-light">
           <a href={`mailto:${user.mail}`}>{user.mail}</a>
         </td>
       </tr>
