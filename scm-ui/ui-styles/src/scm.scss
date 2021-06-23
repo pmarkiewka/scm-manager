@@ -72,6 +72,7 @@ hr.header-with-actions {
     display: none;
   }
 }
+
 .is-mobile-action-spacing {
   @media screen and (max-width: 768px) {
     display: flow-root !important;
@@ -93,7 +94,6 @@ hr.header-with-actions {
 
 footer.footer {
   //height: 100px;
-  background-color: $white-ter;
   padding: inherit;
 
   a {
@@ -103,6 +103,7 @@ footer.footer {
 
 // 6. Import the rest of Bulma
 @import "bulma/bulma";
+@import "bulma-prefers-dark/bulma-prefers-dark";
 @import "bulma-tooltip/dist/css/bulma-tooltip.min";
 
 $dark-75: scale-color($dark, $lightness: 25%);
@@ -126,6 +127,39 @@ $warning-25: scale-color($warning, $lightness: 75%);
 $danger-75: scale-color($danger, $lightness: 25%);
 $danger-50: scale-color($danger, $lightness: 50%);
 $danger-25: scale-color($danger, $lightness: 75%);
+
+@media (prefers-color-scheme: dark) {
+  $primary: $green;
+  $info: $green;
+  $success: $green;
+  $warning: $green;
+  $danger: $green;
+
+  $light: $white-ter !default;
+  $dark: $grey-darker !default;
+
+  $dark-75: scale-color($dark, $lightness: 25%);
+  $dark-50: scale-color($dark, $lightness: 50%);
+  $dark-25: scale-color($dark, $lightness: 75%);
+  $info-75: scale-color($info, $lightness: 25%);
+  $info-50: scale-color($info, $lightness: 50%);
+  $info-25: scale-color($info, $lightness: 75%);
+  $link-75: scale-color($link, $lightness: 25%);
+  $link-50: scale-color($link, $lightness: 50%);
+  $link-25: scale-color($link, $lightness: 75%);
+  $primary-75: scale-color($primary, $lightness: 25%);
+  $primary-50: scale-color($primary, $lightness: 50%);
+  $primary-25: scale-color($primary, $lightness: 75%);
+  $success-75: scale-color($success, $lightness: 25%);
+  $success-50: scale-color($success, $lightness: 50%);
+  $success-25: scale-color($success, $lightness: 75%);
+  $warning-75: scale-color($warning, $lightness: 25%);
+  $warning-50: scale-color($warning, $lightness: 50%);
+  $warning-25: scale-color($warning, $lightness: 75%);
+  $danger-75: scale-color($danger, $lightness: 25%);
+  $danger-50: scale-color($danger, $lightness: 50%);
+  $danger-25: scale-color($danger, $lightness: 75%);
+}
 
 /*
 // not supported by ie
@@ -175,6 +209,7 @@ $danger-25: scale-color($danger, $lightness: 75%);
 .has-text-warning {
   color: #ffb600 !important;
 }
+
 .has-text-warning-invert {
   color: $warning-invert;
 }
@@ -187,63 +222,83 @@ $danger-25: scale-color($danger, $lightness: 75%);
 .has-background-dark-75 {
   background-color: $dark-75;
 }
+
 .has-background-dark-50 {
   background-color: $dark-50;
 }
+
 .has-background-dark-25 {
   background-color: $dark-25;
 }
+
 .has-background-info-75 {
   background-color: $info-75;
 }
+
 .has-background-info-50 {
   background-color: $info-50;
 }
+
 .has-background-info-25 {
   background-color: $info-25;
 }
+
 .has-background-link-75 {
   background-color: $link-75;
 }
+
 .has-background-link-50 {
   background-color: $link-50;
 }
+
 .has-background-link-25 {
   background-color: $link-25;
 }
+
 .has-background-primary-75 {
   background-color: $primary-75;
 }
+
 .has-background-primary-50 {
   background-color: $primary-50;
 }
+
 .has-background-primary-25 {
   background-color: $primary-25;
 }
+
 .has-background-success-75 {
   background-color: $success-75;
 }
+
 .has-background-success-50 {
   background-color: $success-50;
 }
+
 .has-background-success-25 {
   background-color: $success-25;
 }
+
 .has-background-warning-75 {
   background-color: $warning-75;
 }
+
 .has-background-warning-50 {
   background-color: $warning-50;
 }
+
 .has-background-warning-25 {
   background-color: $warning-25;
 }
+
 .has-background-danger-75 {
   background-color: $danger-75;
 }
+
 .has-background-danger-50 {
   background-color: $danger-50;
 }
+
 .has-background-danger-25 {
   background-color: $danger-25;
 }
@@ -261,7 +316,7 @@ $danger-25: scale-color($danger, $lightness: 75%);
     background-color: $light;
   }
 
-  +.is-delete {
+  + .is-delete {
     border-color: #aaa;
     border-width: 1px 1px 1px 0;
   }
@@ -269,42 +324,52 @@ $danger-25: scale-color($danger, $lightness: 75%);
   &.is-outlined {
     background-color: $white;
   }
+
   &.is-black.is-outlined {
     color: $black;
     border-color: $black;
   }
+
   &.is-dark.is-outlined {
     color: $dark;
     border-color: $dark;
   }
+
   &.is-light.is-outlined {
     color: $light;
     border-color: $light;
   }
+
   &.is-white.is-outlined {
     color: $white;
     border-color: $white;
   }
+
   &.is-primary.is-outlined {
     color: $primary;
     border-color: $primary;
   }
+
   &.is-link.is-outlined {
     color: $link;
     border-color: $link;
   }
+
   &.is-info.is-outlined {
     color: $info;
     border-color: $info;
   }
+
   &.is-success.is-outlined {
     color: $success;
     border-color: $success;
   }
+
   &.is-warning.is-outlined {
     color: $warning;
     border-color: $warning;
   }
+
   &.is-danger.is-outlined {
     color: $danger;
     border-color: $danger;
@@ -449,6 +514,7 @@ $danger-25: scale-color($danger, $lightness: 75%);
   &:focus {
     box-shadow: $box-link-hover-shadow;
   }
+
   &:active {
     box-shadow: $box-link-active-shadow;
   }
@@ -468,13 +534,16 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 .subtitle {
   color: #666;
 }
+
 .has-border-white {
   border-color: #fff !important;
 }
+
 ul.is-separated {
   > li:after {
     content: ",\2800";
   }
+
   > li:last-child:after {
     content: "";
   }
@@ -519,6 +588,7 @@ ul.is-separated {
     width: calc(100% - 1.5rem);
   }
 }
+
 .content.is-plugin-page {
   .card-columns {
     .column.is-half .overlay-column {
@@ -540,6 +610,7 @@ ul.is-separated {
 
 .text-box {
   width: calc(50% - 0.75rem);
+
   .shorten-text {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -550,9 +621,9 @@ ul.is-separated {
 // tables
 .table {
   width: 100%;
+
   td,
   th {
-    border-color: #eee;
     padding: 1rem;
   }
 }
@@ -563,12 +634,10 @@ ul.is-separated {
   border-spacing: 0 5px;
 
   tr {
-    a {
-      color: #363636;
-    }
     &.border-is-green td:first-child {
       border-left-color: $green;
     }
+
     &.border-is-yellow td:first-child {
       border-left-color: $yellow;
     }
@@ -576,50 +645,58 @@ ul.is-separated {
     &.is-primary td:first-child {
       border-left-color: $primary;
     }
+
     &.is-success td:first-child {
       border-left-color: $success;
     }
+
     &.is-warning td:first-child {
       border-left-color: $warning;
     }
+
     &.is-danger td:first-child {
       border-left-color: $danger;
     }
+
     &.is-info td:first-child {
       border-left-color: $info;
     }
+
     &.is-link td:first-child {
       border-left-color: $link;
     }
 
     &:hover {
       td {
-        background-color: whitesmoke;
-
         &.is-darker {
           background-color: #e1e1e1;
         }
       }
+
       a {
         color: $blue;
       }
     }
   }
+
   td {
     padding: 1em 1.25em;
-    background-color: #fafafa;
+    //background-color: #fafafa;
     border-bottom: 1px solid whitesmoke;
 
     &:first-child {
       border-left: 3px solid $grey;
     }
+
     &.is-darker {
       background-color: whitesmoke;
     }
   }
+
   &.is-hoverable tbody tr:not(.is-selected):hover {
     background-color: whitesmoke;
   }
+
   thead th {
     background-color: transparent;
     border: none;
@@ -663,6 +740,7 @@ ul.is-separated {
 form .field:not(.is-grouped) {
   margin-bottom: 1rem;
 }
+
 .input,
 .select select,
 .textarea,
@@ -702,16 +780,19 @@ form .field:not(.is-grouped) {
   height: 2.8rem;
   min-width: 5rem;
 }
+
 .pagination-previous,
 .pagination-next {
   height: 2.8rem;
   min-width: 6.75em;
 }
+
 .pagination-previous[disabled],
 .pagination-next[disabled] {
   background-color: #ededed;
   color: #bcbcbc;
 }
+
 .pagination-link.is-current {
   opacity: 1;
 }
@@ -751,6 +832,7 @@ form .field:not(.is-grouped) {
     margin-bottom: 1rem;
   }
 }
+
 .menu-label {
   display: flex;
   height: 3.2rem;
@@ -768,18 +850,18 @@ form .field:not(.is-grouped) {
     margin-bottom: 0;
   }
 }
+
 .menu div:first-child .menu-label {
   background-color: $blue;
+  @media (prefers-color-scheme: dark) {
+    background-color: #12739c;
+    color: #fff;
+  }
 }
+
 .menu-list {
   a {
-    color: #333;
     padding: 1rem;
-
-    &.is-active {
-      color: $blue;
-      background-color: #fff;
-    }
   }
 
   > li {
@@ -790,6 +872,7 @@ form .field:not(.is-grouped) {
       li {
         border-right: none;
       }
+
       li:last-child {
         border-bottom: none;
       }
@@ -812,12 +895,15 @@ form .field:not(.is-grouped) {
     border-left: 1px solid #eee;
     border-right: 1px solid #eee;
   }
+
   > li:first-child {
     border-top: none;
   }
+
   li:last-child {
     border-bottom: 1px solid #eee;
   }
+
   div {
     margin-bottom: 0;
   }
@@ -890,6 +976,7 @@ form .field:not(.is-grouped) {
 .small-loading-spinner {
   position: relative;
   pointer-events: none;
+
   &:after {
     @include loader;
   }
