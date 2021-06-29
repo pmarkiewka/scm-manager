@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { HalRepresentation, Links } from "./hal";
+import { HalRepresentation } from "./hal";
 
 export type FileChangeType = "add" | "modify" | "delete" | "copy" | "rename";
 
@@ -31,7 +31,7 @@ export type Diff = HalRepresentation & {
   partial: boolean;
 };
 
-export type FileDiff = {
+export type FileDiff = HalRepresentation & {
   hunks?: Hunk[];
   newEndingNewLine: boolean;
   newMode?: string;
@@ -45,7 +45,6 @@ export type FileDiff = {
   language?: string;
   // TODO does this property exists?
   isBinary?: boolean;
-  _links?: Links;
 };
 
 export type Hunk = {

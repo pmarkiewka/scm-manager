@@ -24,9 +24,10 @@
 
 import parser from "gitdiff-parser";
 
-import { useInfiniteQuery } from "react-query";
+import { useInfiniteQuery, useMutation } from "react-query";
 import { apiClient } from "./apiclient";
-import { Diff, Link } from "@scm-manager/ui-types";
+import { Diff, FileDiff, Link } from "@scm-manager/ui-types";
+import { requiredLink } from "./links";
 
 type UseDiffOptions = {
   limit?: number;
@@ -41,7 +42,7 @@ export const useDiff = (link: string, options: UseDiffOptions = {}) => {
   const { isLoading, error, data, isFetchingNextPage, fetchNextPage } = useInfiniteQuery<Diff, Error, Diff>(
     ["link", link],
     ({ pageParam }) => {
-      return apiClient.get(pageParam || initialLink).then(response => {
+      return apiClient.get(pageParam || initialLink).then((response) => {
         const contentType = response.headers.get("Content-Type");
         if (contentType && contentType.toLowerCase() === "application/vnd.scmm-diffparsed+json;v=2") {
           return response.json();
@@ -49,18 +50,18 @@ export const useDiff = (link: string, options: UseDiffOptions = {}) => {
           return response
             .text()
             .then(parser.parse)
-            .then(parsedGit => {
+            .then((parsedGit) => {
               return {
                 files: parsedGit,
                 partial: false,
-                _links: {}
+                _links: {},
               };
             });
         }
       });
     },
     {
-      getNextPageParam: lastPage => (lastPage._links.next as Link)?.href
+      getNextPageParam: (lastPage) => (lastPage._links.next as Link)?.href,
     }
   );
 
@@ -71,7 +72,7 @@ export const useDiff = (link: string, options: UseDiffOptions = {}) => {
     fetchNextPage: () => {
       fetchNextPage();
     },
-    data: merge(data?.pages)
+    data: merge(data?.pages),
   };
 };
 
@@ -79,9 +80,41 @@ const merge = (diffs?: Diff[]): Diff | undefined => {
   if (!diffs || diffs.length === 0) {
     return;
   }
-  const joinedFiles = diffs.flatMap(diff => diff.files);
+  const joinedFiles = diffs.flatMap((diff) => diff.files);
   return {
     ...diffs[diffs.length - 1],
-    files: joinedFiles
+    files: joinedFiles,
   };
+};
+
+type LoadLinesRequest = {
+  file: FileDiff;
+  start: number;
+  end: number;
+};
+
+export type LoadLinesFunction = (file: FileDiff, start: number, end: number) => Promise<string[]>;
+
+export const useLoadLines = (): LoadLinesFunction => {
+  const { mutateAsync } = useMutation<string[], Error, LoadLinesRequest>(({ file, start, end }) =>
+    apiClient
+      .get(requiredLink(file, "lines").replace("{start}", start.toString()).replace("{end}", end.toString()))
+      .then((response) => response.text())
+      .then((text) => text.split("\n"))
+      .then((lines) => (lines[lines.length - 1] === "" ? lines.slice(0, lines.length - 1) : lines))
+  );
+  return (file: FileDiff, start: number, end: number) => mutateAsync({ file, start, end });
+};
+
+const useLoadLinesInf = (): LoadLinesFunction => {
+  const { fetchNextPage } = useInfiniteQuery<string[], Error, LoadLinesRequest>(
+    "",
+    ({ pageParam: { file, start, end } }) =>
+      apiClient
+        .get(requiredLink(file, "lines").replace("{start}", start.toString()).replace("{end}", end.toString()))
+        .then((response) => response.text())
+        .then((text) => text.split("\n"))
+        .then((lines) => (lines[lines.length - 1] === "" ? lines.slice(0, lines.length - 1) : lines))
+  );
+  return (file: FileDiff, start: number, end: number) => fetchNextPage({ pageParam: { file, start, end } });
 };
