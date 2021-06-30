@@ -26,7 +26,7 @@ import parser from "gitdiff-parser";
 
 import { useInfiniteQuery, useMutation } from "react-query";
 import { apiClient } from "./apiclient";
-import { Diff, FileDiff, Link } from "@scm-manager/ui-types";
+import {Change, Diff, FileDiff, Hunk, Link} from "@scm-manager/ui-types";
 import { requiredLink } from "./links";
 
 type UseDiffOptions = {
@@ -85,36 +85,4 @@ const merge = (diffs?: Diff[]): Diff | undefined => {
     ...diffs[diffs.length - 1],
     files: joinedFiles,
   };
-};
-
-type LoadLinesRequest = {
-  file: FileDiff;
-  start: number;
-  end: number;
-};
-
-export type LoadLinesFunction = (file: FileDiff, start: number, end: number) => Promise<string[]>;
-
-export const useLoadLines = (): LoadLinesFunction => {
-  const { mutateAsync } = useMutation<string[], Error, LoadLinesRequest>(({ file, start, end }) =>
-    apiClient
-      .get(requiredLink(file, "lines").replace("{start}", start.toString()).replace("{end}", end.toString()))
-      .then((response) => response.text())
-      .then((text) => text.split("\n"))
-      .then((lines) => (lines[lines.length - 1] === "" ? lines.slice(0, lines.length - 1) : lines))
-  );
-  return (file: FileDiff, start: number, end: number) => mutateAsync({ file, start, end });
-};
-
-const useLoadLinesInf = (): LoadLinesFunction => {
-  const { fetchNextPage } = useInfiniteQuery<string[], Error, LoadLinesRequest>(
-    "",
-    ({ pageParam: { file, start, end } }) =>
-      apiClient
-        .get(requiredLink(file, "lines").replace("{start}", start.toString()).replace("{end}", end.toString()))
-        .then((response) => response.text())
-        .then((text) => text.split("\n"))
-        .then((lines) => (lines[lines.length - 1] === "" ? lines.slice(0, lines.length - 1) : lines))
-  );
-  return (file: FileDiff, start: number, end: number) => fetchNextPage({ pageParam: { file, start, end } });
 };

@@ -29,7 +29,6 @@ import { escapeWhitespace } from "./diffs";
 import Notification from "../Notification";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { useLoadLines } from "@scm-manager/ui-api";
 
 type Props = DiffObjectProps & {
   diff: FileDiff[];
@@ -43,7 +42,6 @@ const Diff: FC<Props> = ({ diff, ...fileProps }) => {
   const [t] = useTranslation("repos");
   const location = useLocation();
   const contentRef = useRef<HTMLDivElement>(null);
-  const loadLines = useLoadLines();
 
   useEffect(() => {
     // we have to use componentDidUpdate, because we have to wait until all
@@ -65,7 +63,7 @@ const Diff: FC<Props> = ({ diff, ...fileProps }) => {
       {diff.length === 0 ? (
         <Notification type="info">{t("diff.noDiffFound")}</Notification>
       ) : (
-        diff.map((file, index) => <DiffFile key={index} file={file} loadLines={loadLines} {...fileProps} />)
+        diff.map((file, index) => <DiffFile key={index} file={file} {...fileProps} />)
       )}
     </div>
   );

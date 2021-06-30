@@ -21,8 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import React from "react";
-import { withTranslation, WithTranslation } from "react-i18next";
+import React, { FC, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import classNames from "classnames";
 import styled from "styled-components";
 // @ts-ignore
@@ -34,32 +34,22 @@ import { Change, FileDiff, Hunk as HunkType } from "@scm-manager/ui-types";
 import { ChangeEvent, DiffObjectProps } from "./DiffTypes";
 import TokenizedDiffView from "./TokenizedDiffView";
 import DiffButton from "./DiffButton";
-import { MenuContext, OpenInFullscreenButton } from "@scm-manager/ui-components";
-import DiffExpander, { ExpandableHunk } from "./DiffExpander";
+import { DefaultCollapsed, MenuContext, OpenInFullscreenButton } from "@scm-manager/ui-components";
 import HunkExpandLink from "./HunkExpandLink";
 import { Modal } from "../modals";
 import ErrorNotification from "../ErrorNotification";
 import HunkExpandDivider from "./HunkExpandDivider";
 import { escapeWhitespace } from "./diffs";
-import { LoadLinesFunction } from "@scm-manager/ui-api";
+import { ExpandableHunk, getHunk, useHunks } from "@scm-manager/ui-api";
 
 const EMPTY_ANNOTATION_FACTORY = {};
 
-type Props = DiffObjectProps &
-  WithTranslation & {
-    file: FileDiff;
-    loadLines: LoadLinesFunction;
-  };
+type Props = DiffObjectProps & {
+  file: FileDiff;
+};
 
 type Collapsible = {
   collapsed?: boolean;
-};
-
-type State = Collapsible & {
-  file: FileDiff;
-  sideBySide?: boolean;
-  diffExpander: DiffExpander;
-  expansionError?: any;
 };
 
 const DiffFilePanel = styled.div`
@@ -96,74 +86,77 @@ const MarginlessModalContent = styled.div`
   }
 `;
 
-class DiffFile extends React.Component<Props, State> {
-  static defaultProps: Partial<Props> = {
-    defaultCollapse: false,
-    markConflicts: true,
+const getDefaultCollapse = (file: FileDiff, defaultCollapse: DefaultCollapsed) => {
+  if (typeof defaultCollapse === "boolean") {
+    return defaultCollapse;
+  } else if (typeof defaultCollapse === "function") {
+    return defaultCollapse(file.oldPath, file.newPath);
+  } else {
+    return false;
+  }
+};
+
+const DiffFile: FC<Props> = ({
+  file,
+  markConflicts = true,
+  fileControlFactory,
+  fileAnnotationFactory,
+  annotationFactory,
+  defaultCollapse = false,
+  sideBySide: initialSideBySide = false,
+  hunkClass,
+  onClick,
+}) => {
+  const [t] = useTranslation("repos");
+  const [collapsed, setCollapsed] = useState<boolean>();
+  const [sideBySide, setSideBySide] = useState<boolean>(initialSideBySide);
+  const [expansionError, setExpansionError] = useState<Error | null>(null);
+  const { error, hunks, expandTop, expandBottom } = useHunks(file);
+
+  useEffect(() => {
+    setCollapsed(getDefaultCollapse(file, defaultCollapse));
+  }, [defaultCollapse]);
+
+  useEffect(() => {
+    setExpansionError(error);
+  }, [error]);
+
+  const viewType = sideBySide ? "split" : "unified";
+
+  const hasContent = file && !file.isBinary && hunks.length > 0;
+
+  const toggleCollapse = () => {
+    if (hasContent) {
+      setCollapsed(!collapsed);
+    }
   };
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      collapsed: this.defaultCollapse(),
-      sideBySide: props.sideBySide,
-      diffExpander: new DiffExpander(props.file, props.loadLines),
-      file: props.file,
+  const toggleSideBySide = (callback: () => void) => {
+    setSideBySide(!sideBySide);
+    callback();
+  };
+
+  const expandHunkHead = (expandableHunk: ExpandableHunk, count: number) => {
+    return () => {
+      return expandableHunk.expandHead(count);
     };
-  }
-
-  componentDidUpdate(prevProps: Readonly<Props>) {
-    if (this.props.defaultCollapse !== prevProps.defaultCollapse) {
-      this.setState({
-        collapsed: this.defaultCollapse(),
-      });
-    }
-  }
-
-  defaultCollapse: () => boolean = () => {
-    const { defaultCollapse, file } = this.props;
-    if (typeof defaultCollapse === "boolean") {
-      return defaultCollapse;
-    } else if (typeof defaultCollapse === "function") {
-      return defaultCollapse(file.oldPath, file.newPath);
-    } else {
-      return false;
-    }
   };
 
-  toggleCollapse = () => {
-    const { file } = this.state;
-    if (this.hasContent(file)) {
-      this.setState((state) => ({
-        collapsed: !state.collapsed,
-      }));
-    }
+  const expandHunkBottom = (expandableHunk: ExpandableHunk, count: number) => {
+    return () => {
+      return expandableHunk.expandBottom(count);
+    };
   };
 
-  toggleSideBySide = (callback: () => void) => {
-    this.setState(
-      (state) => ({
-        sideBySide: !state.sideBySide,
-      }),
-      () => callback()
-    );
-  };
-
-  setCollapse = (collapsed: boolean) => {
-    this.setState({
-      collapsed,
-    });
-  };
-
-  createHunkHeader = (expandableHunk: ExpandableHunk) => {
+  const createHunkHeader = (expandableHunk: ExpandableHunk) => {
     if (expandableHunk.maxExpandHeadRange > 0) {
       if (expandableHunk.maxExpandHeadRange <= 10) {
         return (
           <HunkExpandDivider>
             <HunkExpandLink
               icon={"fa-angle-double-up"}
-              onClick={this.expandHead(expandableHunk, expandableHunk.maxExpandHeadRange)}
-              text={this.props.t("diff.expandComplete", { count: expandableHunk.maxExpandHeadRange })}
+              onClick={expandHunkHead(expandableHunk, expandableHunk.maxExpandHeadRange)}
+              text={t("diff.expandComplete", { count: expandableHunk.maxExpandHeadRange })}
             />
           </HunkExpandDivider>
         );
@@ -172,13 +165,13 @@ class DiffFile extends React.Component<Props, State> {
           <HunkExpandDivider>
             <HunkExpandLink
               icon={"fa-angle-up"}
-              onClick={this.expandHead(expandableHunk, 10)}
-              text={this.props.t("diff.expandByLines", { count: 10 })}
+              onClick={expandHunkHead(expandableHunk, 10)}
+              text={t("diff.expandByLines", { count: 10 })}
             />{" "}
             <HunkExpandLink
               icon={"fa-angle-double-up"}
-              onClick={this.expandHead(expandableHunk, expandableHunk.maxExpandHeadRange)}
-              text={this.props.t("diff.expandComplete", { count: expandableHunk.maxExpandHeadRange })}
+              onClick={expandHunkHead(expandableHunk, expandableHunk.maxExpandHeadRange)}
+              text={t("diff.expandComplete", { count: expandableHunk.maxExpandHeadRange })}
             />
           </HunkExpandDivider>
         );
@@ -188,15 +181,15 @@ class DiffFile extends React.Component<Props, State> {
     return <span />;
   };
 
-  createHunkFooter = (expandableHunk: ExpandableHunk) => {
+  const createHunkFooter = (expandableHunk: ExpandableHunk) => {
     if (expandableHunk.maxExpandBottomRange > 0) {
       if (expandableHunk.maxExpandBottomRange <= 10) {
         return (
           <HunkExpandDivider>
             <HunkExpandLink
               icon={"fa-angle-double-down"}
-              onClick={this.expandBottom(expandableHunk, expandableHunk.maxExpandBottomRange)}
-              text={this.props.t("diff.expandComplete", { count: expandableHunk.maxExpandBottomRange })}
+              onClick={expandHunkBottom(expandableHunk, expandableHunk.maxExpandBottomRange)}
+              text={t("diff.expandComplete", { count: expandableHunk.maxExpandBottomRange })}
             />
           </HunkExpandDivider>
         );
@@ -205,13 +198,13 @@ class DiffFile extends React.Component<Props, State> {
           <HunkExpandDivider>
             <HunkExpandLink
               icon={"fa-angle-down"}
-              onClick={this.expandBottom(expandableHunk, 10)}
-              text={this.props.t("diff.expandByLines", { count: 10 })}
+              onClick={expandHunkBottom(expandableHunk, 10)}
+              text={t("diff.expandByLines", { count: 10 })}
             />{" "}
             <HunkExpandLink
               icon={"fa-angle-double-down"}
-              onClick={this.expandBottom(expandableHunk, expandableHunk.maxExpandBottomRange)}
-              text={this.props.t("diff.expandComplete", { count: expandableHunk.maxExpandBottomRange })}
+              onClick={expandHunkBottom(expandableHunk, expandableHunk.maxExpandBottomRange)}
+              text={t("diff.expandComplete", { count: expandableHunk.maxExpandBottomRange })}
             />
           </HunkExpandDivider>
         );
@@ -221,19 +214,19 @@ class DiffFile extends React.Component<Props, State> {
     return <span />;
   };
 
-  createLastHunkFooter = (expandableHunk: ExpandableHunk) => {
+  const createLastHunkFooter = (expandableHunk: ExpandableHunk) => {
     if (expandableHunk.maxExpandBottomRange !== 0) {
       return (
         <HunkExpandDivider>
           <HunkExpandLink
             icon={"fa-angle-down"}
-            onClick={this.expandBottom(expandableHunk, 10)}
-            text={this.props.t("diff.expandLastBottomByLines", { count: 10 })}
+            onClick={expandHunkBottom(expandableHunk, 10)}
+            text={t("diff.expandLastBottomByLines", { count: 10 })}
           />{" "}
           <HunkExpandLink
             icon={"fa-angle-double-down"}
-            onClick={this.expandBottom(expandableHunk, expandableHunk.maxExpandBottomRange)}
-            text={this.props.t("diff.expandLastBottomComplete")}
+            onClick={expandHunkBottom(expandableHunk, expandableHunk.maxExpandBottomRange)}
+            text={t("diff.expandLastBottomComplete")}
           />
         </HunkExpandDivider>
       );
@@ -242,29 +235,7 @@ class DiffFile extends React.Component<Props, State> {
     return <span />;
   };
 
-  expandHead = (expandableHunk: ExpandableHunk, count: number) => {
-    return () => {
-      return expandableHunk.expandHead(count).then(this.diffExpanded).catch(this.diffExpansionFailed);
-    };
-  };
-
-  expandBottom = (expandableHunk: ExpandableHunk, count: number) => {
-    return () => {
-      return expandableHunk.expandBottom(count).then(this.diffExpanded).catch(this.diffExpansionFailed);
-    };
-  };
-
-  diffExpanded = (newFile: FileDiff) => {
-    this.setState({ file: newFile, diffExpander: new DiffExpander(newFile, this.props.loadLines) });
-  };
-
-  diffExpansionFailed = (err: any) => {
-    this.setState({ expansionError: err });
-  };
-
-  collectHunkAnnotations = (hunk: HunkType) => {
-    const { annotationFactory } = this.props;
-    const { file } = this.state;
+  const collectHunkAnnotations = (hunk: HunkType) => {
     if (annotationFactory) {
       return annotationFactory({
         hunk,
@@ -275,9 +246,7 @@ class DiffFile extends React.Component<Props, State> {
     }
   };
 
-  handleClickEvent = (change: Change, hunk: HunkType) => {
-    const { onClick } = this.props;
-    const { file } = this.state;
+  const handleClickEvent = (change: Change, hunk: HunkType) => {
     const context = {
       changeId: getChangeKey(change),
       change,
@@ -289,25 +258,24 @@ class DiffFile extends React.Component<Props, State> {
     }
   };
 
-  createGutterEvents = (hunk: HunkType) => {
-    const { onClick } = this.props;
+  const createGutterEvents = (hunk: HunkType) => {
     if (onClick) {
       return {
         onClick: (event: ChangeEvent) => {
-          this.handleClickEvent(event.change, hunk);
+          handleClickEvent(event.change, hunk);
         },
       };
     }
   };
 
-  renderHunk = (file: FileDiff, expandableHunk: ExpandableHunk, i: number) => {
+  const renderHunk = (file: FileDiff, expandableHunk: ExpandableHunk, i: number) => {
     const hunk = expandableHunk.hunk;
-    if (this.props.markConflicts && hunk.changes) {
-      this.markConflicts(hunk);
+    if (markConflicts && hunk.changes) {
+      markHunkConflicts(hunk);
     }
     const items = [];
     if (file._links?.lines) {
-      items.push(this.createHunkHeader(expandableHunk));
+      items.push(createHunkHeader(expandableHunk));
     } else if (i > 0) {
       items.push(
         <Decoration>
@@ -320,37 +288,37 @@ class DiffFile extends React.Component<Props, State> {
       <Hunk
         key={"hunk-" + hunk.content}
         hunk={expandableHunk.hunk}
-        widgets={this.collectHunkAnnotations(hunk)}
-        gutterEvents={this.createGutterEvents(hunk)}
-        className={this.props.hunkClass ? this.props.hunkClass(hunk) : null}
+        widgets={collectHunkAnnotations(hunk)}
+        gutterEvents={createGutterEvents(hunk)}
+        className={hunkClass ? hunkClass(hunk) : null}
       />
     );
     if (file._links?.lines) {
       if (i === file.hunks!.length - 1) {
-        items.push(this.createLastHunkFooter(expandableHunk));
+        items.push(createLastHunkFooter(expandableHunk));
       } else {
-        items.push(this.createHunkFooter(expandableHunk));
+        items.push(createHunkFooter(expandableHunk));
       }
     }
     return items;
   };
 
-  markConflicts = (hunk: HunkType) => {
+  const markHunkConflicts = (hunk: HunkType) => {
     let inConflict = false;
-    for (let i = 0; i < hunk.changes.length; ++i) {
-      if (hunk.changes[i].content === "<<<<<<< HEAD") {
+    hunk.changes.forEach((item) => {
+      if (item.content === "<<<<<<< HEAD") {
         inConflict = true;
       }
       if (inConflict) {
-        hunk.changes[i].type = "conflict";
+        item.type = "conflict";
       }
-      if (hunk.changes[i].content.startsWith(">>>>>>>")) {
+      if (item.content.startsWith(">>>>>>>")) {
         inConflict = false;
       }
-    }
+    });
   };
 
-  getAnchorId(file: FileDiff) {
+  const getAnchorId = (file: FileDiff) => {
     let path: string;
     if (file.type === "delete") {
       path = file.oldPath;
@@ -358,9 +326,9 @@ class DiffFile extends React.Component<Props, State> {
       path = file.newPath;
     }
     return escapeWhitespace(path);
-  }
+  };
 
-  renderFileTitle = (file: FileDiff) => {
+  const renderFileTitle = (file: FileDiff) => {
     if (file.oldPath !== file.newPath && (file.type === "copy" || file.type === "rename")) {
       return (
         <>
@@ -373,7 +341,7 @@ class DiffFile extends React.Component<Props, State> {
     return file.newPath;
   };
 
-  hoverFileTitle = (file: FileDiff): string => {
+  const hoverFileTitle = (file: FileDiff): string => {
     if (file.oldPath !== file.newPath && (file.type === "copy" || file.type === "rename")) {
       return `${file.oldPath} > ${file.newPath}`;
     } else if (file.type === "delete") {
@@ -382,8 +350,7 @@ class DiffFile extends React.Component<Props, State> {
     return file.newPath;
   };
 
-  renderChangeTag = (file: FileDiff) => {
-    const { t } = this.props;
+  const renderChangeTag = (file: FileDiff) => {
     if (!file.type) {
       return;
     }
@@ -405,106 +372,98 @@ class DiffFile extends React.Component<Props, State> {
     );
   };
 
-  hasContent = (file: FileDiff) => file && !file.isBinary && file.hunks && file.hunks.length > 0;
-
-  render() {
-    const { fileControlFactory, fileAnnotationFactory, t } = this.props;
-    const { file, collapsed, sideBySide, diffExpander, expansionError } = this.state;
-    const viewType = sideBySide ? "split" : "unified";
-
-    const fileAnnotations = fileAnnotationFactory ? fileAnnotationFactory(file) : null;
-    const innerContent = (
-      <div className="panel-block is-paddingless">
-        {fileAnnotations}
-        <TokenizedDiffView className={viewType} viewType={viewType} file={file}>
-          {(hunks: HunkType[]) =>
-            hunks?.map((hunk, n) => {
-              return this.renderHunk(file, diffExpander.getHunk(n), n);
+  const fileAnnotations = fileAnnotationFactory ? fileAnnotationFactory(file) : null;
+  const innerContent = (
+    <div className="panel-block is-paddingless">
+      {fileAnnotations}
+      <TokenizedDiffView className={viewType} viewType={viewType} file={file}>
+        {(hunks: HunkType[]) =>
+          hunks?.map((hunk, n) => {
+            return renderHunk(file, getHunk(file, hunks, n, expandTop, expandBottom), n);
+          })
+        }
+      </TokenizedDiffView>
+    </div>
+  );
+  let icon = "angle-right";
+  let body = null;
+  if (!collapsed) {
+    icon = "angle-down";
+    body = innerContent;
+  }
+  const collapseIcon = hasContent ? <Icon name={icon} color="inherit" /> : null;
+  const fileControls = fileControlFactory ? fileControlFactory(file, setCollapsed) : null;
+  const openInFullscreen = file?.hunks?.length ? (
+    <OpenInFullscreenButton
+      modalTitle={file.type === "delete" ? file.oldPath : file.newPath}
+      modalBody={<MarginlessModalContent>{innerContent}</MarginlessModalContent>}
+    />
+  ) : null;
+  const sideBySideToggle = file?.hunks?.length && (
+    <MenuContext.Consumer>
+      {({ setCollapsed: setMenuCollapsed }) => (
+        <DiffButton
+          icon={sideBySide ? "align-left" : "columns"}
+          tooltip={t(sideBySide ? "diff.combined" : "diff.sideBySide")}
+          onClick={() =>
+            toggleSideBySide(() => {
+              if (sideBySide) {
+                setMenuCollapsed(true);
+              }
             })
           }
-        </TokenizedDiffView>
-      </div>
-    );
-    let icon = "angle-right";
-    let body = null;
-    if (!collapsed) {
-      icon = "angle-down";
-      body = innerContent;
-    }
-    const collapseIcon = this.hasContent(file) ? <Icon name={icon} color="inherit" /> : null;
-    const fileControls = fileControlFactory ? fileControlFactory(file, this.setCollapse) : null;
-    const openInFullscreen = file?.hunks?.length ? (
-      <OpenInFullscreenButton
-        modalTitle={file.type === "delete" ? file.oldPath : file.newPath}
-        modalBody={<MarginlessModalContent>{innerContent}</MarginlessModalContent>}
-      />
-    ) : null;
-    const sideBySideToggle = file?.hunks?.length && (
-      <MenuContext.Consumer>
-        {({ setCollapsed }) => (
-          <DiffButton
-            icon={sideBySide ? "align-left" : "columns"}
-            tooltip={t(sideBySide ? "diff.combined" : "diff.sideBySide")}
-            onClick={() =>
-              this.toggleSideBySide(() => {
-                if (this.state.sideBySide) {
-                  setCollapsed(true);
-                }
-              })
-            }
-          />
-        )}
-      </MenuContext.Consumer>
-    );
-    const headerButtons = (
-      <AlignRight className={classNames("level-right", "is-flex")}>
-        <ButtonGroup>
-          {sideBySideToggle}
-          {openInFullscreen}
-          {fileControls}
-        </ButtonGroup>
-      </AlignRight>
-    );
-
-    let errorModal;
-    if (expansionError) {
-      errorModal = (
-        <Modal
-          title={t("diff.expansionFailed")}
-          closeFunction={() => this.setState({ expansionError: undefined })}
-          body={<ErrorNotification error={expansionError} />}
-          active={true}
         />
-      );
-    }
+      )}
+    </MenuContext.Consumer>
+  );
+  const headerButtons = (
+    <AlignRight className={classNames("level-right", "is-flex")}>
+      <ButtonGroup>
+        {sideBySideToggle}
+        {openInFullscreen}
+        {fileControls}
+      </ButtonGroup>
+    </AlignRight>
+  );
 
-    return (
-      <DiffFilePanel
-        className={classNames("panel", "is-size-6")}
-        collapsed={(file && file.isBinary) || collapsed}
-        id={this.getAnchorId(file)}
-      >
-        {errorModal}
-        <div className="panel-heading">
-          <div className={classNames("level", "is-flex-wrap-wrap")}>
-            <FullWidthTitleHeader
-              className={classNames("level-left", "is-flex", "has-cursor-pointer")}
-              onClick={this.toggleCollapse}
-              title={this.hoverFileTitle(file)}
-            >
-              {collapseIcon}
-              <TitleWrapper className={classNames("is-ellipsis-overflow", "is-size-6")}>
-                {this.renderFileTitle(file)}
-              </TitleWrapper>
-              {this.renderChangeTag(file)}
-            </FullWidthTitleHeader>
-            {headerButtons}
-          </div>
-        </div>
-        {body}
-      </DiffFilePanel>
+  let errorModal;
+  if (expansionError) {
+    errorModal = (
+      <Modal
+        title={t("diff.expansionFailed")}
+        closeFunction={() => setExpansionError(null)}
+        body={<ErrorNotification error={expansionError} />}
+        active={true}
+      />
     );
   }
-}
 
-export default withTranslation("repos")(DiffFile);
+  return (
+    <DiffFilePanel
+      className={classNames("panel", "is-size-6")}
+      collapsed={(file && file.isBinary) || collapsed}
+      id={getAnchorId(file)}
+    >
+      {errorModal}
+      <div className="panel-heading">
+        <div className={classNames("level", "is-flex-wrap-wrap")}>
+          <FullWidthTitleHeader
+            className={classNames("level-left", "is-flex", "has-cursor-pointer")}
+            onClick={toggleCollapse}
+            title={hoverFileTitle(file)}
+          >
+            {collapseIcon}
+            <TitleWrapper className={classNames("is-ellipsis-overflow", "is-size-6")}>
+              {renderFileTitle(file)}
+            </TitleWrapper>
+            {renderChangeTag(file)}
+          </FullWidthTitleHeader>
+          {headerButtons}
+        </div>
+      </div>
+      {body}
+    </DiffFilePanel>
+  );
+};
+
+export default DiffFile;

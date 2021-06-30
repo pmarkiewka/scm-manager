@@ -29,7 +29,7 @@ import styled from "styled-components";
 type Props = {
   icon: string;
   text: string;
-  onClick: () => Promise<any>;
+  onClick: () => any;
 };
 
 const ExpandLink = styled.span`
