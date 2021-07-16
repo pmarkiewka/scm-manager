@@ -37,6 +37,7 @@ import ChangesetShortLink from "./repos/components/changesets/ChangesetShortLink
 import "./tokenExpired";
 import LegacyReduxProvider from "./LegacyReduxProvider";
 import ReduxAwareApiProvider from "./ReduxAwareApiProvider";
+import { applyPolyfills, defineCustomElements } from "@bruit/component/loader";
 
 binder.bind("changeset.description.tokens", ChangesetShortLink);
 
@@ -57,3 +58,7 @@ ReactDOM.render(
   </LegacyReduxProvider>,
   root
 );
+
+applyPolyfills().then(async () => {
+  await defineCustomElements(window);
+});

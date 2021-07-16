@@ -32,6 +32,7 @@ import { EXTENSION_POINT } from "../avatar/Avatar";
 import ExternalNavLink from "../navigation/ExternalNavLink";
 import { useTranslation } from "react-i18next";
 import { createAttributesForTesting } from "../devBuild";
+import Feedback from "@scm-manager/ui-webapp/src/components/Feedback";
 
 type Props = {
   me?: Me;
@@ -114,6 +115,7 @@ const Footer: FC<Props> = ({ me, version, links }) => {
               label={t("footer.support.enterprise")}
             />
             <ExtensionPoint name="footer.support" props={extensionProps} renderAll={true} />
+            <Feedback />
           </FooterSection>
         </div>
       </section>

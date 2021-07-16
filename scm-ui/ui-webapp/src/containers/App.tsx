@@ -29,6 +29,7 @@ import { binder } from "@scm-manager/ui-extensions";
 import Login from "./Login";
 import { useIndex, useSubject } from "@scm-manager/ui-api";
 import NavigationBar from "./NavigationBar";
+import Feedback from "../components/Feedback";
 
 const App: FC = () => {
   const { data: index } = useIndex();

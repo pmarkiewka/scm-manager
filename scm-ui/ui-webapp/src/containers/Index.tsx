@@ -32,6 +32,7 @@ import { Link } from "@scm-manager/ui-types";
 import i18next from "i18next";
 import { binder } from "@scm-manager/ui-extensions";
 import InitializationAdminAccountStep from "./InitializationAdminAccountStep";
+import Feedback from "../components/Feedback";
 
 const Index: FC = () => {
   const { isLoading, error, data } = useIndex();
