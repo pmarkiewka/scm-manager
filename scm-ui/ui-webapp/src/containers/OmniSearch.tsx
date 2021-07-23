@@ -122,7 +122,8 @@ const MoreResults: FC<GotoProps> = ({ gotoDetailSearch }) => {
         {t("search.quickSearch.moreResults")}
       </Button>
     </ResultFooter>
-  );};
+  );
+};
 
 const Hits: FC<HitsProps> = ({ hits, index, clear, gotoDetailSearch }) => {
   const id = useCallback(namespaceAndName, [hits]);
@@ -133,13 +134,14 @@ const Hits: FC<HitsProps> = ({ hits, index, clear, gotoDetailSearch }) => {
   }
 
   return (
-    <div className="dropdown-content">
+    <div aria-expanded="true" role="listbox" className="dropdown-content">
       <ResultHeading className="dropdown-item">{t("search.quickSearch.resultHeading")}</ResultHeading>
       {hits.map((hit, idx) => (
         <div key={id(hit)} onMouseDown={(e) => e.preventDefault()} onClick={clear}>
           <Link
             className={classNames("dropdown-item", "has-text-weight-medium", { "is-active": idx === index })}
             to={`/repo/${id(hit)}`}
+            role="option"
           >
             {id(hit)}
           </Link>
@@ -265,6 +267,8 @@ const OmniSearch: FC = () => {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={onKeyDown}
               value={query}
+              role="combobox"
+              aria-autocomplete="list"
               {...handlers}
             />
             {isLoading ? null : (
