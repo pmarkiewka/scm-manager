@@ -117,7 +117,7 @@ const ResultFooter = styled.div`
 const MoreResults: FC<GotoProps> = ({ gotoDetailSearch }) => {
   const [t] = useTranslation("commons");
   return (
-    <ResultFooter className="dropdown-item has-text-centered" onMouseDown={(e) => e.preventDefault()}>
+    <ResultFooter className="dropdown-item has-text-centered">
       <Button action={gotoDetailSearch} color="primary">
         {t("search.quickSearch.moreResults")}
       </Button>
@@ -273,7 +273,7 @@ const OmniSearch: FC = () => {
               </span>
             )}
           </div>
-          <div className="dropdown-menu">
+          <div className="dropdown-menu" onMouseDown={(e) => e.preventDefault()}>
             {error ? <SearchErrorNotification error={error} /> : null}
             {!error && data ? (
               <Hits gotoDetailSearch={gotoDetailSearch} clear={clearQuery} index={index} hits={data._embedded.hits} />
