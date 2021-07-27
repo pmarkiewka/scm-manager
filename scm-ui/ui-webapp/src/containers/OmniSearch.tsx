@@ -21,14 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import React, { FC, KeyboardEvent as ReactKeyboardEvent, MouseEvent, useCallback, useState, useEffect } from "react";
+import React, { FC, KeyboardEvent as ReactKeyboardEvent, MouseEvent, useCallback, useEffect, useState } from "react";
 import { Hit, Links, ValueHitField } from "@scm-manager/ui-types";
 import styled from "styled-components";
-import { BackendError, useSearch } from "@scm-manager/ui-api";
+import {BackendError, urls, useSearch, useSearchHelpContent} from "@scm-manager/ui-api";
 import classNames from "classnames";
 import { Link, useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button, ErrorNotification, Notification } from "@scm-manager/ui-components";
+import {
+  Button,
+  ErrorNotification,
+  Icon,
+  Loading,
+  MarkdownView,
+  Modal,
+  Notification,
+} from "@scm-manager/ui-components";
 
 const Field = styled.div`
   margin-bottom: 0 !important;
@@ -106,6 +114,9 @@ const ResultHeading = styled.h3`
   margin: 0 0.5rem;
   padding: 0.375rem 0.5rem;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const DropdownMenu = styled.div`
@@ -131,32 +142,60 @@ const MoreResults: FC<GotoProps> = ({ gotoDetailSearch }) => {
 
 const Hits: FC<HitsProps> = ({ hits, index, clear, gotoDetailSearch }) => {
   const id = useCallback(namespaceAndName, [hits]);
-  const [t] = useTranslation("commons");
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const { t, i18n } = useTranslation("commons");
+  const { isLoading, error, data: helpModalContent } = useSearchHelpContent(i18n.languages[0]);
 
   if (hits.length === 0) {
     return <EmptyHits gotoDetailSearch={gotoDetailSearch} />;
   }
 
+  let modal;
+  if (showHelpModal) {
+    let modalContent;
+    if (isLoading) {
+      modalContent = <Loading />;
+    } else if (error) {
+      modalContent = <ErrorNotification error={error} />;
+    } else {
+      modalContent = <MarkdownView content={helpModalContent!} basePath="/" />;
+    }
+    modal = (
+      <Modal
+        title={t("search.quickSearch.hints")}
+        body={modalContent}
+        active={showHelpModal}
+        closeFunction={() => setShowHelpModal(false)}
+      />
+    );
+  }
+
   return (
-    <div aria-expanded="true" role="listbox" className="dropdown-content">
-      <ResultHeading className="dropdown-item">{t("search.quickSearch.resultHeading")}</ResultHeading>
-      {hits.map((hit, idx) => (
-        <div key={id(hit)} onMouseDown={(e) => e.preventDefault()} onClick={clear}>
-          <Link
-            className={classNames("dropdown-item", "has-text-weight-medium", "is-ellipsis-overflow", {
+    <>
+      {modal}
+      <div aria-expanded="true" role="listbox" className="dropdown-content">
+        <ResultHeading className="dropdown-item">
+          <span>{t("search.quickSearch.resultHeading")}</span>
+          <Icon onClick={() => setShowHelpModal(true)} title={t("search.quickSearch.hintsIcon")} name="question-circle" color="info" className="is-clickable" />
+        </ResultHeading>
+        {hits.map((hit, idx) => (
+          <div key={id(hit)} onMouseDown={(e) => e.preventDefault()} onClick={clear}>
+            <Link
+              className={classNames("dropdown-item", "has-text-weight-medium", "is-ellipsis-overflow", {
               "is-active": idx === index,
             })}
             title={id(hit)}
-            to={`/repo/${id(hit)}`}
-            role="option"
+              to={`/repo/${id(hit)}`}
+              role="option"
             data-omnisearch="true"
-          >
-            {id(hit)}
-          </Link>
-        </div>
-      ))}
-      <MoreResults gotoDetailSearch={gotoDetailSearch} />
-    </div>
+            >
+              {id(hit)}
+            </Link>
+          </div>
+        ))}
+        <MoreResults gotoDetailSearch={gotoDetailSearch} />
+      </div>
+    </>
   );
 };
 
