@@ -75,10 +75,11 @@ class SearchResourceTest {
 
   @BeforeEach
   void setUpDispatcher() {
-    QueryResultMapper mapper = Mappers.getMapper(QueryResultMapper.class);
-    mapper.setRegistry(enricherRegistry);
+    QueryResultMapper queryResultMapper = Mappers.getMapper(QueryResultMapper.class);
+    SearchableTypeMapper searchableTypeMapper = Mappers.getMapper(SearchableTypeMapper.class);
+    queryResultMapper.setRegistry(enricherRegistry);
     SearchResource resource = new SearchResource(
-      searchEngine, mapper
+      searchEngine, queryResultMapper, searchableTypeMapper
     );
     dispatcher = new RestDispatcher();
     dispatcher.addSingletonResource(resource);
