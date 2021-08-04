@@ -53,10 +53,10 @@ export type QueryResult = PagedCollection<HitEmbedded> & {
 export type SearchableField = {
   name: string;
   type: string;
-}
+};
 
 export type SearchableType = HalRepresentation & {
   name: string;
   type: string;
   fields: SearchableField[];
-}
+};
