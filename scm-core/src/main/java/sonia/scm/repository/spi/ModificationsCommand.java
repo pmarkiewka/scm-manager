@@ -21,9 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-    
+
 package sonia.scm.repository.spi;
 
+import sonia.scm.FeatureNotSupportedException;
+import sonia.scm.repository.Feature;
 import sonia.scm.repository.Modifications;
 
 import java.io.IOException;
@@ -40,6 +42,15 @@ public interface ModificationsCommand {
 
   Modifications getModifications(String revision) throws IOException;
 
-  Modifications getModifications(ModificationsCommandRequest request) throws IOException;
+  default Modifications getModifications(String baseRevision, String revision) throws IOException {
+    throw new FeatureNotSupportedException(Feature.COMBINED_MODIFICATIONS.name());
+  }
 
+  default Modifications getModifications(ModificationsCommandRequest request) throws IOException {
+    if (request.getBaseRevision().isPresent()) {
+      return getModifications(request.getBaseRevision().get(), request.getRevision());
+    } else {
+      return getModifications(request.getRevision());
+    }
+  }
 }
