@@ -32,7 +32,7 @@ import org.apache.lucene.queryparser.flexible.standard.config.PointsConfig;
 import java.lang.reflect.Field;
 
 @Getter
-class SearchableField {
+class LuceneSearchableField implements SearchableField {
 
   private final String name;
   private final Class<?> type;
@@ -42,7 +42,7 @@ class SearchableField {
   private final boolean highlighted;
   private final PointsConfig pointsConfig;
 
-  SearchableField(Field field, Indexed indexed) {
+  LuceneSearchableField(Field field, Indexed indexed) {
     this.name = name(field, indexed);
     this.type = field.getType();
     this.valueExtractor = ValueExtractors.create(name, type);
@@ -63,4 +63,5 @@ class SearchableField {
     }
     return field.getName();
   }
+
 }
