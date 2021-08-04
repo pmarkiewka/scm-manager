@@ -25,14 +25,17 @@
 package sonia.scm.repository.spi;
 
 import com.aragost.javahg.Changeset;
+import com.aragost.javahg.commands.BranchCommand;
 import com.aragost.javahg.commands.CopyCommand;
 import com.aragost.javahg.commands.RemoveCommand;
 import com.aragost.javahg.commands.RenameCommand;
+import com.aragost.javahg.commands.UpdateCommand;
 import org.junit.Before;
 import org.junit.Test;
 import sonia.scm.repository.HgConfigResolver;
 import sonia.scm.repository.HgTestUtil;
 import sonia.scm.repository.Modifications;
+import sonia.scm.repository.client.spi.CheckoutCommand;
 
 import java.io.File;
 import java.util.function.Consumer;
@@ -110,6 +113,31 @@ public class HgModificationsCommandTest extends IncomingOutgoingTestBase {
     String revision = String.valueOf(changeset.getRevision());
     Consumer<Modifications> assertModifications = assertCopiedFiles(srcFileName, newFileName);
     assertModifications.accept(outgoingModificationsCommand.getModifications(revision));
+  }
+
+  @Test
+  public void shouldFindModificationsBetweenRevisions() throws Exception {
+    writeNewFile(outgoing, outgoingDirectory, "a.txt", "bal bla");
+    Changeset baseChangeset = commit(outgoing, "add files");
+    BranchCommand.on(outgoing).set("some_branch");
+    writeNewFile(outgoing, outgoingDirectory, "x.txt", "bla bla");
+    Changeset otherBranchCommit = commit(outgoing, "other branch");
+
+    UpdateCommand.on(outgoing).rev("default").execute();
+    writeNewFile(outgoing, outgoingDirectory, "a.txt", "modified content");
+    commit(outgoing, "modify file");
+    writeNewFile(outgoing, outgoingDirectory, "c.txt", "brand new file");
+    Changeset targetChangeset = commit(outgoing, "add file");
+
+    Modifications modifications = outgoingModificationsCommand.getModifications(otherBranchCommit.getNode(), targetChangeset.getNode());
+
+    assertThat(modifications.getModifications())
+      .hasSize(3)
+      .extracting("class.simpleName")
+      .contains("Modified") // File a.txt has been modified
+      .contains("Removed") // File x.txt from the other branch is not present
+      .contains("Added") // File c.txt has been created o the original branch
+    ;
   }
 
   Consumer<Modifications> assertRemovedFiles(String fileName) {
